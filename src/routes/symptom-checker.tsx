@@ -23,7 +23,7 @@ export const Route = createFileRoute("/symptom-checker")({
 
 function Page() {
   const [loading, setLoading] = useState(false);
-  const [primaryLang, setPrimaryLang] = useState<"hi" | "en">("hi");
+  const [primaryLang, setPrimaryLang] = useState<"hi" | "en">("en");
   const [result, setResult] = useState<SymptomResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [lastInput, setLastInput] = useState<{ text: string; lang: LanguageId; loc: string; image: string | null } | null>(null);
@@ -94,16 +94,16 @@ function Page() {
                 </span>
                 <div className="inline-flex items-center rounded-full border border-[color:var(--color-stone-border)] bg-white p-0.5 text-xs">
                   <button
-                    onClick={() => setPrimaryLang("hi")}
-                    className={`px-3 py-1 rounded-full font-devanagari transition ${primaryLang === "hi" ? "bg-[color:var(--color-saffron)] text-white" : "text-[color:var(--color-stone-warm)]"}`}
-                  >
-                    हिंदी
-                  </button>
-                  <button
                     onClick={() => setPrimaryLang("en")}
                     className={`px-3 py-1 rounded-full transition ${primaryLang === "en" ? "bg-[color:var(--color-saffron)] text-white" : "text-[color:var(--color-stone-warm)]"}`}
                   >
                     English
+                  </button>
+                  <button
+                    onClick={() => setPrimaryLang("hi")}
+                    className={`px-3 py-1 rounded-full font-devanagari transition ${primaryLang === "hi" ? "bg-[color:var(--color-saffron)] text-white" : "text-[color:var(--color-stone-warm)]"}`}
+                  >
+                    हिंदी
                   </button>
                 </div>
               </div>

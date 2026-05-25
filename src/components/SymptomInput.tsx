@@ -128,7 +128,7 @@ export function SymptomInput({
 
       {image && (
         <div className="mb-3 inline-flex items-center gap-1.5 text-xs bg-[#F0FDFA] text-[color:var(--color-teal-deep)] border border-[color:var(--color-teal-deep)] px-2.5 py-1 rounded-full">
-          📸 Photo added
+          <Camera size={12} /> Photo added
         </div>
       )}
       <button
