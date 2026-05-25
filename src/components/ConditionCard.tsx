@@ -3,7 +3,7 @@ export function ConditionCard({
   nameHi,
   info,
   infoHi,
-  primary = "hi",
+  primary = "en",
 }: {
   name: string;
   nameHi: string;
