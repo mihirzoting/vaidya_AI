@@ -30,3 +30,20 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Frontend
+frontend/node_modules/
+frontend/dist/
+frontend/.env.local
+
+# Backend
+backend/__pycache__/
+backend/venv/
+backend/.env
+backend/models/
+
+# DB
+*.sqlite3
+
+# OS
+.DS_Store
