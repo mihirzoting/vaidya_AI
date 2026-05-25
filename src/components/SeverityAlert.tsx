@@ -5,7 +5,7 @@ const config: Record<Level, { bg: string; text: string; border: string; title_hi
     bg: "bg-[#DC2626]",
     text: "text-white",
     border: "border-[#DC2626]",
-    title_hi: "🔴 आपातकाल — तुरंत जाएं",
+    title_hi: "आपातकाल — तुरंत जाएं",
     title_en: "Emergency — Go immediately",
     body_hi: "तुरंत चिकित्सा सहायता लें। निकटतम अस्पताल जाएं या 112 पर कॉल करें।",
     body_en: "Seek immediate medical attention. Visit the nearest hospital or call 112.",
@@ -15,7 +15,7 @@ const config: Record<Level, { bg: string; text: string; border: string; title_hi
     bg: "bg-[#FEF3C7]",
     text: "text-[#92400E]",
     border: "border-[#FCD34D]",
-    title_hi: "🟡 सामान्य गंभीरता",
+    title_hi: "सामान्य गंभीरता",
     title_en: "Moderate Severity",
     body_hi: "जल्द क्लिनिक जाएं। देरी न करें।",
     body_en: "Visit a clinic soon. Do not delay seeking care.",
@@ -24,14 +24,14 @@ const config: Record<Level, { bg: string; text: string; border: string; title_hi
     bg: "bg-[#F0FDF4]",
     text: "text-[#166534]",
     border: "border-[#86EFAC]",
-    title_hi: "🟢 कम गंभीरता",
+    title_hi: "कम गंभीरता",
     title_en: "Low Severity",
     body_hi: "अपने लक्षणों पर ध्यान दें। आराम करें, पानी पिएं, और स्थिति बिगड़ने पर डॉक्टर से मिलें।",
     body_en: "Monitor your symptoms. Rest, stay hydrated, and consult a doctor if symptoms worsen.",
   },
 };
 
-export function SeverityAlert({ level, primary = "hi" }: { level: Level; primary?: "hi" | "en" }) {
+export function SeverityAlert({ level, primary = "en" }: { level: Level; primary?: "hi" | "en" }) {
   const c = config[level];
   const primaryTitle = primary === "hi" ? c.title_hi : c.title_en;
   const secondaryTitle = primary === "hi" ? c.title_en : c.title_hi;
