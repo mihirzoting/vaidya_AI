@@ -23,17 +23,18 @@ export const Route = createFileRoute("/symptom-checker")({
 
 function Page() {
   const [loading, setLoading] = useState(false);
+  const [primaryLang, setPrimaryLang] = useState<"hi" | "en">("hi");
   const [result, setResult] = useState<SymptomResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [lastInput, setLastInput] = useState<{ text: string; lang: LanguageId; loc: string } | null>(null);
+  const [lastInput, setLastInput] = useState<{ text: string; lang: LanguageId; loc: string; image: string | null } | null>(null);
 
-  const run = async (text: string, lang: LanguageId, loc: string) => {
+  const run = async (text: string, lang: LanguageId, loc: string, image: string | null) => {
     setLoading(true);
     setError(null);
     setResult(null);
-    setLastInput({ text, lang, loc });
+    setLastInput({ text, lang, loc, image });
     try {
-      const res = await checkSymptoms({ text, language: lang, latitude: null, longitude: null });
+      const res = await checkSymptoms({ text, language: lang, latitude: null, longitude: null, image });
       setResult(res);
     } catch {
       setError("Could not analyse symptoms. Please try again.");
@@ -42,7 +43,7 @@ function Page() {
     }
   };
 
-  const retry = () => lastInput && run(lastInput.text, lastInput.lang, lastInput.loc);
+  const retry = () => lastInput && run(lastInput.text, lastInput.lang, lastInput.loc, lastInput.image);
 
   const severityMap: Record<string, "low" | "moderate" | "emergency"> = {
     LOW: "low", MODERATE: "moderate", EMERGENCY: "emergency",
@@ -87,41 +88,70 @@ function Page() {
 
           {result && (
             <>
-              <div>
+              <div className="flex items-center justify-between gap-3 flex-wrap">
                 <span className="inline-block bg-[color:var(--color-teal-deep)] text-white text-xs px-3 py-1.5 rounded-[3px]">
                   Language Detected: {labelFor(result.detected_language)}
                 </span>
+                <div className="inline-flex items-center rounded-full border border-[color:var(--color-stone-border)] bg-white p-0.5 text-xs">
+                  <button
+                    onClick={() => setPrimaryLang("hi")}
+                    className={`px-3 py-1 rounded-full font-devanagari transition ${primaryLang === "hi" ? "bg-[color:var(--color-saffron)] text-white" : "text-[color:var(--color-stone-warm)]"}`}
+                  >
+                    हिंदी
+                  </button>
+                  <button
+                    onClick={() => setPrimaryLang("en")}
+                    className={`px-3 py-1 rounded-full transition ${primaryLang === "en" ? "bg-[color:var(--color-saffron)] text-white" : "text-[color:var(--color-stone-warm)]"}`}
+                  >
+                    English
+                  </button>
+                </div>
               </div>
 
               <div>
                 <div className="text-xs uppercase tracking-wider text-[color:var(--color-stone-warm)] mb-2">
-                  Symptoms Identified
+                  Symptoms Identified / <span className="font-devanagari">पहचाने गए लक्षण</span>
                 </div>
                 <div className="flex flex-wrap gap-2">
                   {result.symptoms_extracted.map((s) => (
-                    <span key={s} className="border border-[color:var(--color-teal-deep)] text-[color:var(--color-teal-deep)] text-sm px-3 py-1 rounded-[3px]">
-                      {s}
+                    <span key={s.en} className="border border-[color:var(--color-teal-deep)] text-[color:var(--color-teal-deep)] text-sm px-3 py-1 rounded-[3px]">
+                      {primaryLang === "hi" ? (
+                        <><span className="font-devanagari">{s.hi}</span> <span className="opacity-70 text-xs">/ {s.en}</span></>
+                      ) : (
+                        <>{s.en} <span className="font-devanagari opacity-70 text-xs">/ {s.hi}</span></>
+                      )}
                     </span>
                   ))}
                 </div>
               </div>
 
-              <SeverityAlert level={severityMap[result.severity.level]} />
+              <SeverityAlert level={severityMap[result.severity.level]} primary={primaryLang} />
 
               <div>
-                <h3 className="font-serif-display text-2xl">Possible Related Conditions</h3>
+                <h3 className="font-serif-display text-2xl">
+                  Possible Related Conditions <span className="font-devanagari text-lg text-[color:var(--color-teal-deep)]">— संभावित स्थितियाँ</span>
+                </h3>
                 <p className="text-xs italic text-[color:var(--color-stone-warm)] mb-4">
-                  Informational only — not a medical assessment.
+                  <span className="font-devanagari">केवल जानकारी के लिए — चिकित्सा मूल्यांकन नहीं।</span> Informational only — not a medical assessment.
                 </p>
                 <div className="space-y-4">
                   {result.possible_conditions.map((c) => (
-                    <ConditionCard key={c.name} name={c.name} info={c.info} />
+                    <ConditionCard
+                      key={c.name}
+                      name={c.name}
+                      nameHi={c.name_hi}
+                      info={c.info}
+                      infoHi={c.info_hi}
+                      primary={primaryLang}
+                    />
                   ))}
                 </div>
               </div>
 
               <div>
-                <h3 className="font-serif-display text-2xl mb-4">Nearest PHC / CHC Clinics</h3>
+                <h3 className="font-serif-display text-2xl mb-4">
+                  Nearest PHC / CHC Clinics <span className="font-devanagari text-lg text-[color:var(--color-teal-deep)]">— निकटतम क्लिनिक</span>
+                </h3>
                 <div className="grid sm:grid-cols-2 gap-4">
                   {result.nearby_clinics.map((c) => (
                     <ClinicCard key={c.name} clinic={c} />
@@ -136,7 +166,7 @@ function Page() {
         </div>
       </div>
       <DisclaimerBanner>
-        Vaidya AI is a triage and routing assistant only. It does not provide medical advice, prescriptions, or clinical assessments. Please consult a qualified doctor for any health concern.
+        <span className="font-devanagari">यह चिकित्सा सलाह नहीं है। कृपया डॉक्टर से मिलें।</span> Vaidya AI is a triage and routing assistant only. It does not provide medical advice, prescriptions, or clinical assessments. Please consult a qualified doctor for any health concern.
       </DisclaimerBanner>
     </div>
   );
